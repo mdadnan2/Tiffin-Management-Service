@@ -13,7 +13,11 @@ async function bootstrapLambda() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.useGlobalFilters(new AllExceptionsFilter());
   app.enableCors({
-    origin: process.env.FRONTEND_URL || '*',
+    origin: [
+      process.env.FRONTEND_URL,
+      'https://tiffin-management-service.vercel.app',
+      'http://localhost:3000'
+    ].filter(Boolean),
     credentials: true,
   });
 
@@ -45,7 +49,11 @@ async function bootstrapLocal() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.useGlobalFilters(new AllExceptionsFilter());
   app.enableCors({
-    origin: process.env.FRONTEND_URL || '*',
+    origin: [
+      process.env.FRONTEND_URL,
+      'https://tiffin-management-service.vercel.app',
+      'http://localhost:3000'
+    ].filter(Boolean),
     credentials: true,
   });
 
