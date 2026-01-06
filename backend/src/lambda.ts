@@ -42,7 +42,7 @@ export const handler: Handler = async (event, context, callback) => {
     console.error('Context:', JSON.stringify(context));
     return {
       statusCode: 500,
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         message: 'Internal server error',
         error: error.message,
         stack: error.stack,
