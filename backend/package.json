@@ -61,7 +61,8 @@
     "typescript": "^5.1.3",
     "ts-node": "^10.9.1",
     "ts-loader": "^9.5.4",
-    "prisma": "5.22.0"
+    "prisma": "5.22.0",
+    "webpack": "^5.104.1"
   },
   "devDependencies": {
     "@nestjs/schematics": "^10.0.0",
@@ -94,7 +95,6 @@
     "ts-jest": "^29.1.0",
     "ts-loader": "^9.5.4",
     "tsconfig-paths": "^4.2.0",
-    "webpack": "^5.104.1",
     "webpack-node-externals": "^3.0.0"
   },
   "prisma": {
