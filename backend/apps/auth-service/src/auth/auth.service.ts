@@ -40,8 +40,13 @@ export class AuthService {
       select: { id: true, email: true, name: true, role: true, createdAt: true },
     });
 
-    const tokens = await this.generateTokens(user.id, user.email, user.role);
-    return { user, ...tokens };
+    try {
+      const tokens = await this.generateTokens(user.id, user.email, user.role);
+      return { user, ...tokens };
+    } catch (err) {
+      console.error('Error generating tokens in register:', err);
+      throw err;
+    }
   }
 
   /**
@@ -106,6 +111,7 @@ export class AuthService {
 
       return this.generateTokens(user.id, user.email, user.role);
     } catch (error) {
+      console.error('refreshToken error:', error);
       if (error instanceof UnauthorizedException) throw error;
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
@@ -118,14 +124,19 @@ export class AuthService {
    * - Returns new tokens
    */
   async refreshTokens(userId: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-      select: { id: true, email: true, role: true },
-    });
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true, email: true, role: true },
+      });
 
-    if (!user) throw new UnauthorizedException('User account not found or has been deleted');
+      if (!user) throw new UnauthorizedException('User account not found or has been deleted');
 
-    return this.generateTokens(user.id, user.email, user.role);
+      return this.generateTokens(user.id, user.email, user.role);
+    } catch (err) {
+      console.error('refreshTokens error:', err);
+      throw err;
+    }
   }
 
   /**
@@ -136,18 +147,21 @@ export class AuthService {
    */
   private async generateTokens(userId: string, email: string, role: UserRole) {
     const payload = { sub: userId, email, role };
-
-    const [accessToken, refreshToken] = await Promise.all([
-      this.jwtService.signAsync(payload, {
-        secret: this.configService.get('JWT_SECRET'),
-        expiresIn: this.configService.get('JWT_EXPIRATION'),
-      }),
-      this.jwtService.signAsync(payload, {
-        secret: this.configService.get('JWT_REFRESH_SECRET'),
-        expiresIn: this.configService.get('JWT_REFRESH_EXPIRATION'),
-      }),
-    ]);
-
-    return { accessToken, refreshToken };
+    try {
+      const [accessToken, refreshToken] = await Promise.all([
+        this.jwtService.signAsync(payload, {
+          secret: this.configService.get('JWT_SECRET'),
+          expiresIn: this.configService.get('JWT_EXPIRATION'),
+        }),
+        this.jwtService.signAsync(payload, {
+          secret: this.configService.get('JWT_REFRESH_SECRET'),
+          expiresIn: this.configService.get('JWT_REFRESH_EXPIRATION'),
+        }),
+      ]);
+      return { accessToken, refreshToken };
+    } catch (err) {
+      console.error('generateTokens error:', err);
+      throw err;
+    }
   }
 }

@@ -1,8 +1,7 @@
 import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { RegisterDto } from './dto/auth.dto';
 import { UserRole } from '@prisma/client';
 
@@ -11,7 +10,6 @@ export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
-    private configService: ConfigService,
   ) {}
 
   async register(dto: RegisterDto) {
@@ -55,7 +53,7 @@ export class AuthService {
   async refreshToken(refreshToken: string) {
     try {
       const payload = await this.jwtService.verifyAsync(refreshToken, {
-        secret: this.configService.get('JWT_REFRESH_SECRET'),
+        secret: process.env.JWT_REFRESH_SECRET,
       });
 
       const user = await this.prisma.user.findUnique({
@@ -76,12 +74,12 @@ export class AuthService {
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
-        secret: this.configService.get('JWT_SECRET'),
-        expiresIn: this.configService.get('JWT_EXPIRATION'),
+        secret: process.env.JWT_SECRET,
+        expiresIn: process.env.JWT_EXPIRATION,
       }),
       this.jwtService.signAsync(payload, {
-        secret: this.configService.get('JWT_REFRESH_SECRET'),
-        expiresIn: this.configService.get('JWT_REFRESH_EXPIRATION'),
+        secret: process.env.JWT_REFRESH_SECRET,
+        expiresIn: process.env.JWT_REFRESH_EXPIRATION,
       }),
     ]);
 

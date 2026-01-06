@@ -74,7 +74,7 @@
     "ApiLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/lambda/tiffin-management-api-prod-api"
+        "LogGroupName": "/aws/lambda/tiffin-management-api-dev-api"
       }
     },
     "IamRoleLambdaExecution": {
@@ -103,7 +103,7 @@
                 "-",
                 [
                   "tiffin-management-api",
-                  "prod",
+                  "dev",
                   "lambda"
                 ]
               ]
@@ -120,7 +120,7 @@
                   ],
                   "Resource": [
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/tiffin-management-api-prod*:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/tiffin-management-api-dev*:*"
                     }
                   ]
                 },
@@ -131,7 +131,7 @@
                   ],
                   "Resource": [
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/tiffin-management-api-prod*:*:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/tiffin-management-api-dev*:*:*"
                     }
                   ]
                 },
@@ -154,7 +154,7 @@
             "-",
             [
               "tiffin-management-api",
-              "prod",
+              "dev",
               {
                 "Ref": "AWS::Region"
               },
@@ -171,22 +171,22 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/tiffin-management-api/prod/1766760986296-2025-12-26T14:56:26.296Z/tiffin-management-api.zip"
+          "S3Key": "serverless/tiffin-management-api/dev/1767102454314-2025-12-30T13:47:34.314Z/tiffin-management-api.zip"
         },
-        "Handler": "src/main.handler",
+        "Handler": "src/lambda.handler",
         "Runtime": "nodejs18.x",
-        "FunctionName": "tiffin-management-api-prod-api",
+        "FunctionName": "tiffin-management-api-dev-api",
         "MemorySize": 1024,
         "Timeout": 30,
         "Environment": {
           "Variables": {
             "NODE_ENV": "production",
-            "DATABASE_URL": "postgresql://postgres.cgipvoybzbiqkklfknsc:L%2Fjsi%23kn%21X%40%267ig@aws-1-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true",
+            "DATABASE_URL": "",
             "JWT_SECRET": "your-super-secret-jwt-key-change-in-production",
             "JWT_EXPIRATION": "15m",
             "JWT_REFRESH_SECRET": "your-super-secret-refresh-key-change-in-production",
             "JWT_REFRESH_EXPIRATION": "7d",
-            "FRONTEND_URL": "https://your-frontend.vercel.app"
+            "FRONTEND_URL": "https://tiffin-management-service.vercel.app"
           }
         },
         "Role": {
@@ -200,20 +200,20 @@
         "ApiLogGroup"
       ]
     },
-    "ApiLambdaVersionZMod4c42bRutGRy0vl70lj7RZeqT0zfybpsGL2HE": {
+    "ApiLambdaVersionhJNB0o9ZVmIX1EDWlrjwSoahpdha2inMo7RIG8RL0": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "ApiLambdaFunction"
         },
-        "CodeSha256": "B3XEangUEZ5OYDsJTj3q6i7WbGQXDhjgvYqa6MKamic="
+        "CodeSha256": "c/+Gjv18Cns/mxlyFrj01D3YJPLuca+UfE3P2/b2IPQ="
       }
     },
     "ApiGatewayRestApi": {
       "Type": "AWS::ApiGateway::RestApi",
       "Properties": {
-        "Name": "prod-tiffin-management-api",
+        "Name": "dev-tiffin-management-api",
         "EndpointConfiguration": {
           "Types": [
             "EDGE"
@@ -429,13 +429,13 @@
         "ApiLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayDeployment1766760950466": {
+    "ApiGatewayDeployment1767102090229": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
           "Ref": "ApiGatewayRestApi"
         },
-        "StageName": "prod"
+        "StageName": "dev"
       },
       "DependsOn": [
         "ApiGatewayMethodProxyVarOptions",
@@ -488,16 +488,16 @@
         "Ref": "ServerlessDeploymentBucket"
       },
       "Export": {
-        "Name": "sls-tiffin-management-api-prod-ServerlessDeploymentBucketName"
+        "Name": "sls-tiffin-management-api-dev-ServerlessDeploymentBucketName"
       }
     },
     "ApiLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "ApiLambdaVersionZMod4c42bRutGRy0vl70lj7RZeqT0zfybpsGL2HE"
+        "Ref": "ApiLambdaVersionhJNB0o9ZVmIX1EDWlrjwSoahpdha2inMo7RIG8RL0"
       },
       "Export": {
-        "Name": "sls-tiffin-management-api-prod-ApiLambdaFunctionQualifiedArn"
+        "Name": "sls-tiffin-management-api-dev-ApiLambdaFunctionQualifiedArn"
       }
     },
     "ServiceEndpoint": {
@@ -518,12 +518,12 @@
             {
               "Ref": "AWS::URLSuffix"
             },
-            "/prod"
+            "/dev"
           ]
         ]
       },
       "Export": {
-        "Name": "sls-tiffin-management-api-prod-ServiceEndpoint"
+        "Name": "sls-tiffin-management-api-dev-ServiceEndpoint"
       }
     }
   }

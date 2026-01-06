@@ -9,18 +9,18 @@ provider:
   stage: ${opt:stage, 'dev'}
   
   # Lambda configuration
-  memorySize: 1024  # 1GB RAM (cold start optimization)
-  timeout: 30       # 30 seconds max execution
+  memorySize: 1024
+  timeout: 30
   
-  # Environment variables (set via CLI or AWS Console)
+  # Environment variables
   environment:
     NODE_ENV: production
-    DATABASE_URL: ${env:DATABASE_URL}
-    JWT_SECRET: ${env:JWT_SECRET}
-    JWT_EXPIRATION: ${env:JWT_EXPIRATION, '15m'}
-    JWT_REFRESH_SECRET: ${env:JWT_REFRESH_SECRET}
-    JWT_REFRESH_EXPIRATION: ${env:JWT_REFRESH_EXPIRATION, '7d'}
-    FRONTEND_URL: ${env:FRONTEND_URL}
+    DATABASE_URL: ${param:DATABASE_URL, ''}
+    JWT_SECRET: ${param:JWT_SECRET, 'your-super-secret-jwt-key-change-in-production'}
+    JWT_EXPIRATION: ${param:JWT_EXPIRATION, '15m'}
+    JWT_REFRESH_SECRET: ${param:JWT_REFRESH_SECRET, 'your-super-secret-refresh-key-change-in-production'}
+    JWT_REFRESH_EXPIRATION: ${param:JWT_REFRESH_EXPIRATION, '7d'}
+    FRONTEND_URL: ${param:FRONTEND_URL, 'https://tiffin-management-service.vercel.app'}
   
   # IAM permissions
   iam:
@@ -36,9 +36,8 @@ provider:
 # Lambda function
 functions:
   api:
-    handler: src/main.handler
+    handler: src/lambda.handler
     events:
-      # Catch-all route for NestJS
       - http:
           path: /{proxy+}
           method: ANY
@@ -48,7 +47,6 @@ functions:
               - Content-Type
               - Authorization
             allowCredentials: true
-      # Root path
       - http:
           path: /
           method: ANY
@@ -65,29 +63,16 @@ package:
 
 # Plugins
 plugins:
-  - serverless-esbuild
+  - serverless-webpack
   - serverless-offline
 
 # Custom configuration
 custom:
-  esbuild:
-    bundle: true
-    minify: true
-    sourcemap: false
-    exclude:
-      - '@nestjs/microservices'
-      - '@nestjs/websockets'
-      - 'class-transformer/storage'
-    target: 'node18'
-    platform: 'node'
-    concurrency: 10
-    packager: npm
-    external:
-      - '@prisma/client'
-      - '.prisma'
-      - 'aws-sdk'
-    loader:
-      .html: text
-    nativeZip: true
+  webpack:
+    webpackConfig: 'webpack.config.js'
+    includeModules:
+      forceExclude:
+        - aws-sdk
+    packager: 'npm'
   serverless-offline:
     httpPort: 3001
