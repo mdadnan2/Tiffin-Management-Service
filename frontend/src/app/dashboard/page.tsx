@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { motion } from 'framer-motion';
 import { TrendingUp, UtensilsCrossed, IndianRupee, Coffee, Soup, Moon, Sparkles, BarChart3, Wallet } from 'lucide-react';
 import { toast } from 'sonner';
-import type { Dashboard } from '@/types';
+import type { Dashboard, MealType } from '@/types';
 
 
 const mealIcons = {
@@ -176,8 +176,8 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-4">
-                  {['BREAKFAST', 'LUNCH', 'DINNER', 'CUSTOM'].map((type, index) => {
-                    const Icon = mealIcons[type as keyof typeof mealIcons];
+                  {(['BREAKFAST', 'LUNCH', 'DINNER', 'CUSTOM'] as MealType[]).map((type, index) => {
+                    const Icon = mealIcons[type];
                     const count = dashboard?.byType?.[type] || 0;
                     return (
                       <motion.div
