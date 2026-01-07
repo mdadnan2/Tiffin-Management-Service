@@ -52,26 +52,26 @@ export default function MonthlyDashboard() {
   return (
     <Card className="border-2 shadow-xl bg-gradient-to-br from-slate-100 to-gray-200 dark:from-slate-900 dark:to-gray-900">
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-2xl">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2">
             <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
               <TrendingUp className="h-5 w-5 text-white" />
             </div>
-            Monthly Dashboard
-          </CardTitle>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon" onClick={previousMonth}>
+            <CardTitle className="text-xl sm:text-2xl">Monthly Dashboard</CardTitle>
+          </div>
+          <div className="flex items-center justify-center gap-2">
+            <Button variant="outline" size="icon" onClick={previousMonth} className="h-8 w-8 sm:h-9 sm:w-9">
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <span className="font-semibold min-w-[180px] text-center">{monthName}</span>
-            <Button variant="outline" size="icon" onClick={nextMonth}>
+            <span className="font-semibold text-sm sm:text-base min-w-[140px] sm:min-w-[180px] text-center">{monthName}</span>
+            <Button variant="outline" size="icon" onClick={nextMonth} className="h-8 w-8 sm:h-9 sm:w-9">
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3">
           <div className="p-4 rounded-lg bg-blue-100 dark:bg-blue-950/30 border-2 border-blue-300 dark:border-blue-800 hover:bg-blue-200 dark:hover:bg-blue-900/40 transition-all hover:scale-105 cursor-pointer">
             <p className="text-sm text-muted-foreground mb-1">Total Meals</p>
             <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{data?.totalMeals || 0}</p>
@@ -88,13 +88,17 @@ export default function MonthlyDashboard() {
 
         <div>
           <h3 className="font-semibold mb-3">By Meal Type</h3>
-          <div className="grid gap-2 md:grid-cols-2">
-            {data?.byType && Object.entries(data.byType).map(([type, count]: [string, any]) => (
-              <div key={type} className="flex items-center justify-between p-3 rounded-lg bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 transition-all hover:scale-105 cursor-pointer">
-                <span className="font-medium">{type}</span>
-                <Badge variant="secondary">{count} meals • ₹{data.amountByType[type]?.toFixed(2) || 0}</Badge>
-              </div>
-            ))}
+          <div className="space-y-2">
+            {['BREAKFAST', 'LUNCH', 'DINNER', 'CUSTOM'].map((type) => {
+              const count = data?.byType?.[type] || 0;
+              const amount = data?.amountByType?.[type] || 0;
+              return (
+                <div key={type} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 rounded-lg bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 transition-all hover:scale-105 cursor-pointer gap-2">
+                  <span className="font-medium">{type}</span>
+                  <Badge variant="secondary" className="text-xs">{count} meals • ₹{amount.toFixed(2)}</Badge>
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -102,11 +106,11 @@ export default function MonthlyDashboard() {
           <h3 className="font-semibold mb-3">Week by Week</h3>
           <div className="space-y-2">
             {data?.byWeek && Object.entries(data.byWeek).map(([week, stats]: [string, any]) => (
-              <div key={week} className="flex items-center justify-between p-3 rounded-lg bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 transition-all hover:scale-105 cursor-pointer">
+              <div key={week} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 rounded-lg bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 transition-all hover:scale-105 cursor-pointer gap-2">
                 <span className="font-medium">Week {week}</span>
-                <div className="flex gap-4">
-                  <Badge variant="secondary">{stats.meals} meals</Badge>
-                  <Badge variant="secondary">₹{stats.amount.toFixed(2)}</Badge>
+                <div className="flex gap-2 sm:gap-4">
+                  <Badge variant="secondary" className="text-xs">{stats.meals} meals</Badge>
+                  <Badge variant="secondary" className="text-xs">₹{stats.amount.toFixed(2)}</Badge>
                 </div>
               </div>
             ))}

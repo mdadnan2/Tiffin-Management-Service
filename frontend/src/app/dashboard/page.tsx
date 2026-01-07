@@ -84,17 +84,17 @@ export default function DashboardPage() {
             transition={{ duration: 0.4, ease: "easeOut" }}
             className="space-y-8"
           >
-          <div className="flex items-center gap-4">
-            <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary via-accent to-primary shadow-2xl flex items-center justify-center">
-              <BarChart3 className="h-8 w-8 text-white" />
+          <div className="flex items-center gap-3">
+            <div className="h-12 sm:h-14 w-12 sm:w-14 rounded-2xl bg-gradient-to-br from-primary via-accent to-primary shadow-2xl flex items-center justify-center flex-shrink-0">
+              <BarChart3 className="h-6 sm:h-7 w-6 sm:w-7 text-white" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">My Dashboard</h1>
-              <p className="text-muted-foreground text-lg mt-1">Track your meal consumption and spending</p>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">My Dashboard</h1>
+              <p className="text-muted-foreground text-xs sm:text-sm mt-0.5">Track your meal consumption and spending</p>
             </div>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -110,7 +110,7 @@ export default function DashboardPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-5xl font-bold text-orange-600 dark:text-orange-400">{dashboard?.totalMeals || 0}</div>
+                  <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-orange-600 dark:text-orange-400">{dashboard?.totalMeals || 0}</div>
                   <p className="text-xs text-muted-foreground mt-2">meals consumed</p>
                 </CardContent>
               </Card>
@@ -131,7 +131,7 @@ export default function DashboardPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-5xl font-bold text-green-600 dark:text-green-400">₹{dashboard?.totalAmount.toFixed(2) || 0}</div>
+                  <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-green-600 dark:text-green-400">₹{dashboard?.totalAmount.toFixed(2) || 0}</div>
                   <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
                     <TrendingUp className="h-3 w-3" />
                     total spending
@@ -155,7 +155,7 @@ export default function DashboardPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-5xl font-bold text-blue-600 dark:text-blue-400">
+                  <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-blue-600 dark:text-blue-400">
                     ₹{dashboard?.totalMeals ? (dashboard.totalAmount / dashboard.totalMeals).toFixed(2) : 0}
                   </div>
                   <p className="text-xs text-muted-foreground mt-2">average cost</p>
@@ -175,9 +175,10 @@ export default function DashboardPage() {
                 <CardDescription>Your meal consumption breakdown</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                  {dashboard?.byType && Object.entries(dashboard.byType).map(([type, count], index) => {
-                    const Icon = mealIcons[type as keyof typeof mealIcons] || Sparkles;
+                <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-4">
+                  {['BREAKFAST', 'LUNCH', 'DINNER', 'CUSTOM'].map((type, index) => {
+                    const Icon = mealIcons[type as keyof typeof mealIcons];
+                    const count = dashboard?.byType?.[type] || 0;
                     return (
                       <motion.div
                         key={type}
@@ -185,15 +186,15 @@ export default function DashboardPage() {
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.5 + index * 0.1 }}
                         whileHover={{ scale: 1.05, y: -5 }}
-                        className="flex flex-col items-center gap-3 p-6 rounded-xl border-2 hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-card to-accent/5 cursor-pointer"
+                        className="flex flex-col items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-xl border-2 hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-card to-accent/5 cursor-pointer"
                       >
-                        <div className={`h-16 w-16 rounded-full bg-gradient-to-br ${getMealColor(type)} flex items-center justify-center shadow-lg`}>
-                          <Icon className="h-8 w-8 text-white" />
+                        <div className={`h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-gradient-to-br ${getMealColor(type)} flex items-center justify-center shadow-lg`}>
+                          <Icon className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
                         </div>
                         <div className="text-center">
-                          <p className="text-sm font-semibold text-muted-foreground mb-1">{type}</p>
-                          <p className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">{count}</p>
-                          <p className="text-xs text-muted-foreground mt-1">meals</p>
+                          <p className="text-xs sm:text-sm font-semibold text-muted-foreground mb-1 uppercase">{type}</p>
+                          <p className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">{count}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">meals</p>
                         </div>
                       </motion.div>
                     );

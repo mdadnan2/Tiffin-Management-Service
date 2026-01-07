@@ -52,6 +52,11 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  button, a {
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
@@ -74,8 +79,10 @@
 
 html {
   overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   overflow-x: hidden;
+  touch-action: pan-y;
 }

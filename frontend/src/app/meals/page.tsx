@@ -255,20 +255,20 @@ export default function MealsPage() {
     <>
       <Navbar />
       <main className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
             className="space-y-8"
           >
-          <div className="flex items-center gap-4">
-            <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary via-accent to-primary shadow-2xl flex items-center justify-center">
-              <UtensilsCrossed className="h-8 w-8 text-white" />
+          <div className="flex items-center gap-3 sm:gap-4 mb-8">
+            <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-gradient-to-br from-primary via-accent to-primary shadow-2xl flex items-center justify-center">
+              <UtensilsCrossed className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">My Meals</h1>
-              <p className="text-muted-foreground text-lg mt-1">Manage your daily meal orders</p>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">My Meals</h1>
+              <p className="text-muted-foreground text-sm sm:text-base mt-0.5">Manage your daily meal orders</p>
             </div>
           </div>
 
@@ -318,55 +318,58 @@ export default function MealsPage() {
                         return (
                           <div
                             key={mealType}
-                            className="p-4 rounded-lg border-2 bg-card space-y-3"
+                            className="p-3 rounded-lg border-2 bg-card space-y-3"
                           >
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-3">
-                                <div className={`h-12 w-12 rounded-full bg-gradient-to-br ${getMealColor(mealType)} flex items-center justify-center`}>
-                                  <Icon className="h-6 w-6 text-white" />
+                            <div className="flex flex-col gap-3">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <div className={`h-10 w-10 rounded-full bg-gradient-to-br ${getMealColor(mealType)} flex items-center justify-center`}>
+                                    <Icon className="h-5 w-5 text-white" />
+                                  </div>
+                                  <div>
+                                    <p className="font-bold text-sm">{mealType}</p>
+                                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                      <Calendar className="h-3 w-3" />
+                                      {startDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                                      {mealsInGroup.length > 1 && ` - ${endDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}`}
+                                    </p>
+                                  </div>
                                 </div>
-                                <div>
-                                  <p className="font-bold text-lg">{mealType}</p>
-                                  <p className="text-sm text-muted-foreground flex items-center gap-1">
-                                    <Calendar className="h-3 w-3" />
-                                    {startDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
-                                    {mealsInGroup.length > 1 && ` - ${endDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}`}
-                                  </p>
+                                <div className="flex items-center gap-2">
+                                  <Badge variant="secondary" className="text-xs">{mealsInGroup.length} days</Badge>
+                                  {upcomingMeals.length > 0 && (
+                                    <Button
+                                      variant="destructive"
+                                      size="sm"
+                                      className="h-8"
+                                      onClick={async () => {
+                                        const confirmed = confirm(`Delete all upcoming ${mealType} meals (${upcomingMeals.length} days)?`);
+                                        if (!confirmed) return;
+                                        try {
+                                          await Promise.all(upcomingMeals.map(m => api.meals.delete(m.id)));
+                                          toast.success(`${upcomingMeals.length} upcoming meals deleted`);
+                                          await loadMeals();
+                                          await loadScheduledMeals();
+                                        } catch (err: any) {
+                                          toast.error('Failed to delete meals');
+                                        }
+                                      }}
+                                    >
+                                      <Trash2 className="h-3 w-3 mr-1" /> Delete
+                                    </Button>
+                                  )}
                                 </div>
-                              </div>
-                              <div className="flex items-center gap-3">
-                                <Badge variant="secondary" className="text-sm">{mealsInGroup.length} days</Badge>
-                                {upcomingMeals.length > 0 && (
-                                  <Button
-                                    variant="destructive"
-                                    size="sm"
-                                    onClick={async () => {
-                                      const confirmed = confirm(`Delete all upcoming ${mealType} meals (${upcomingMeals.length} days)?`);
-                                      if (!confirmed) return;
-                                      try {
-                                        await Promise.all(upcomingMeals.map(m => api.meals.delete(m.id)));
-                                        toast.success(`${upcomingMeals.length} upcoming meals deleted`);
-                                        await loadMeals();
-                                        await loadScheduledMeals();
-                                      } catch (err: any) {
-                                        toast.error('Failed to delete meals');
-                                      }
-                                    }}
-                                  >
-                                    <Trash2 className="h-4 w-4 mr-1" /> Delete Upcoming
-                                  </Button>
-                                )}
                               </div>
                             </div>
                             
-                            <div className="grid grid-cols-7 gap-2">
+                            <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5">
                               {mealsInGroup.map((meal) => {
                                 const isCancelled = meal.status === 'CANCELLED';
                                 
                                 return (
                                   <div
                                     key={meal.id}
-                                    className={`relative p-2 rounded-lg border-2 text-center transition-all ${
+                                    className={`relative p-1.5 rounded-lg border-2 text-center transition-all ${
                                       isCancelled
                                         ? 'bg-red-100 dark:bg-red-950/30 border-red-500'
                                         : 'bg-gray-100 dark:bg-gray-800 border-gray-300'
@@ -375,17 +378,17 @@ export default function MealsPage() {
                                     <p className="text-xs font-semibold">
                                       {new Date(meal.date).getDate()}
                                     </p>
-                                    <p className="text-[10px] text-muted-foreground">
+                                    <p className="text-[9px] text-muted-foreground">
                                       {new Date(meal.date).toLocaleDateString('en-IN', { month: 'short' })}
                                     </p>
-                                    <div className="mt-1">
+                                    <div className="mt-0.5">
                                       {isCancelled ? (
-                                        <X className="h-5 w-5 text-red-600 dark:text-red-400 mx-auto" />
+                                        <X className="h-4 w-4 text-red-600 dark:text-red-400 mx-auto" />
                                       ) : (
                                         <Button
                                           variant="ghost"
                                           size="icon"
-                                          className="h-6 w-6 p-0 hover:bg-red-200 dark:hover:bg-red-900"
+                                          className="h-5 w-5 p-0 hover:bg-red-200 dark:hover:bg-red-900"
                                           onClick={async () => {
                                             try {
                                               await api.meals.delete(meal.id);
@@ -398,7 +401,7 @@ export default function MealsPage() {
                                           }}
                                           title="Cancel this meal"
                                         >
-                                          <X className="h-4 w-4" />
+                                          <X className="h-3 w-3" />
                                         </Button>
                                       )}
                                     </div>
@@ -416,148 +419,153 @@ export default function MealsPage() {
             )}
           </Card>
 
-          <Card className="border-2 shadow-xl bg-gradient-to-br from-card to-accent/5">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="flex items-center gap-2 text-2xl">
-                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                      <Plus className="h-5 w-5 text-white" />
-                    </div>
-                    Add New Meal
-                  </CardTitle>
-                  <CardDescription>Schedule your meals for any date</CardDescription>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant={!bulkMode ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setBulkMode(false)}
-                  >
-                    Single Day
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={bulkMode ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setBulkMode(true)}
-                  >
-                    Multiple Days
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleAddMeal} className="space-y-6">
-                {bulkMode ? (
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <div className="space-y-2">
-                      <label className="text-sm font-semibold flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-primary" />
-                        Start Date
-                      </label>
-                      <Input
-                        type="date"
-                        value={bulkStartDate}
-                        onChange={(e) => setBulkStartDate(e.target.value)}
-                        min={today}
-                        className="h-12 text-base"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-semibold flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-primary" />
-                        End Date
-                      </label>
-                      <Input
-                        type="date"
-                        value={bulkEndDate}
-                        onChange={(e) => setBulkEndDate(e.target.value)}
-                        min={today}
-                        className="h-12 text-base"
-                        required
-                      />
-                    </div>
+          <div className="max-w-3xl mx-auto">
+            <Card className="border-2 shadow-xl bg-gradient-to-br from-card to-accent/5">
+              <CardHeader>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div>
+                    <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl">
+                      <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                        <Plus className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                      </div>
+                      Add New Meal
+                    </CardTitle>
+                    <CardDescription className="text-xs sm:text-sm">Schedule your meals for any date</CardDescription>
                   </div>
-                ) : (
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-primary" />
-                      Select Date
-                    </label>
-                    <Input
-                      type="date"
-                      value={date}
-                      onChange={(e) => setDate(e.target.value)}
-                      className="h-12 text-base"
-                      required
-                    />
-                  </div>
-                )}
-                <div className="grid gap-6 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold">Select Meal Type</label>
-                    <select
-                      className="flex h-12 w-full rounded-md border-2 border-input bg-background px-4 py-2 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all"
-                      value={mealType}
-                      onChange={(e) => setMealType(e.target.value as MealType)}
+                  <div className="flex gap-2 w-full sm:w-auto">
+                    <Button
+                      type="button"
+                      variant={!bulkMode ? 'default' : 'outline'}
+                      size="sm"
+                      className="flex-1 sm:flex-none"
+                      onClick={() => setBulkMode(false)}
                     >
-                      {availableTypes.map(type => (
-                        <option key={type} value={type}>
-                          {type === 'BREAKFAST' ? '☕ Breakfast' : type === 'LUNCH' ? '🍲 Lunch' : type === 'DINNER' ? '🌙 Dinner' : '✨ Custom'}
-                        </option>
-                      ))}
-                    </select>
+                      Single Day
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={bulkMode ? 'default' : 'outline'}
+                      size="sm"
+                      className="flex-1 sm:flex-none"
+                      onClick={() => setBulkMode(true)}
+                    >
+                      Multiple Days
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleAddMeal} className="space-y-6">
+                  {bulkMode ? (
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div className="space-y-2">
+                        <label className="text-sm font-semibold flex items-center gap-2">
+                          <Calendar className="h-4 w-4 text-primary" />
+                          Start Date
+                        </label>
+                        <Input
+                          type="date"
+                          value={bulkStartDate}
+                          onChange={(e) => setBulkStartDate(e.target.value)}
+                          min={today}
+                          className="h-12 text-base"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-semibold flex items-center gap-2">
+                          <Calendar className="h-4 w-4 text-primary" />
+                          End Date
+                        </label>
+                        <Input
+                          type="date"
+                          value={bulkEndDate}
+                          onChange={(e) => setBulkEndDate(e.target.value)}
+                          min={today}
+                          className="h-12 text-base"
+                          required
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold flex items-center gap-2">
+                        <Calendar className="h-4 w-4 text-primary" />
+                        Select Date
+                      </label>
+                      <Input
+                        type="date"
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
+                        className="h-12 text-base"
+                        required
+                      />
+                    </div>
+                  )}
+                  <div className="grid gap-6 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold">Select Meal Type</label>
+                      <select
+                        className="flex h-12 w-full rounded-md border-2 border-input bg-background px-4 py-2 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all"
+                        value={mealType}
+                        onChange={(e) => setMealType(e.target.value as MealType)}
+                      >
+                        {availableTypes.map(type => (
+                          <option key={type} value={type}>
+                            {type === 'BREAKFAST' ? '☕ Breakfast' : type === 'LUNCH' ? '🍲 Lunch' : type === 'DINNER' ? '🌙 Dinner' : '✨ Custom'}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold">Meal Count</label>
+                      <Input
+                        type="number"
+                        min="1"
+                        max="10"
+                        value={count}
+                        onChange={(e) => setCount(Number(e.target.value))}
+                        className="h-12 text-base"
+                        required
+                      />
+                    </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold">Meal Count</label>
+                    <label className="text-sm font-semibold">Note (Optional)</label>
                     <Input
-                      type="number"
-                      min="1"
-                      max="10"
-                      value={count}
-                      onChange={(e) => setCount(Number(e.target.value))}
+                      type="text"
+                      placeholder="Add any special instructions..."
+                      value={note}
+                      onChange={(e) => setNote(e.target.value)}
                       className="h-12 text-base"
-                      required
+                      maxLength={200}
                     />
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold">Note (Optional)</label>
-                  <Input
-                    type="text"
-                    placeholder="Add any special instructions..."
-                    value={note}
-                    onChange={(e) => setNote(e.target.value)}
-                    className="h-12 text-base"
-                    maxLength={200}
-                  />
-                </div>
-                <Button type="submit" disabled={loading} className="w-full h-12 text-base gap-2 shadow-lg hover:shadow-xl transition-all">
-                  <Plus className="h-5 w-5" />
-                  {loading ? (bulkMode ? 'Scheduling Meals...' : 'Adding Meal...') : (bulkMode ? 'Schedule Meals' : 'Add Meal')}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+                  <Button type="submit" disabled={loading} className="w-full h-12 text-base gap-2 shadow-lg hover:shadow-xl transition-all">
+                    <Plus className="h-5 w-5" />
+                    {loading ? (bulkMode ? 'Scheduling Meals...' : 'Adding Meal...') : (bulkMode ? 'Schedule Meals' : 'Add Meal')}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
 
-          <Card className="border-2 shadow-xl">
-            <CardHeader>
-              <div className="flex items-center justify-between flex-wrap gap-4">
-                <div>
-                  <CardTitle className="text-2xl">Meal History</CardTitle>
-                  <CardDescription>View your past meal orders including today</CardDescription>
+          <div className="max-w-3xl mx-auto">
+            <Card className="border-2 shadow-xl bg-gradient-to-br from-card to-accent/5">
+              <CardHeader>
+                <div className="flex items-center justify-between flex-wrap gap-4">
+                  <div>
+                    <CardTitle className="text-2xl">Meal History</CardTitle>
+                    <CardDescription>View your past meal orders including today</CardDescription>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" onClick={() => setQuickFilter('today')}>Today</Button>
+                    <Button variant="outline" size="sm" onClick={() => setQuickFilter('week')}>This Week</Button>
+                    <Button variant="outline" size="sm" onClick={() => setQuickFilter('month')}>This Month</Button>
+                    <Button variant="outline" size="sm" onClick={() => setQuickFilter('all')}>All</Button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" onClick={() => setQuickFilter('today')}>Today</Button>
-                  <Button variant="outline" size="sm" onClick={() => setQuickFilter('week')}>This Week</Button>
-                  <Button variant="outline" size="sm" onClick={() => setQuickFilter('month')}>This Month</Button>
-                  <Button variant="outline" size="sm" onClick={() => setQuickFilter('all')}>All</Button>
-                </div>
-              </div>
-              <div className="grid gap-4 md:grid-cols-3 mt-4">
+                <div className="grid gap-4 md:grid-cols-4 mt-4">
                 <div className="space-y-2">
                   <label className="text-sm font-semibold flex items-center gap-2">
                     <Filter className="h-4 w-4" />
@@ -630,16 +638,15 @@ export default function MealsPage() {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.05, duration: 0.3 }}
-                        whileHover={{ scale: 1.01, x: 4 }}
-                        className="flex flex-col md:flex-row items-start md:items-center justify-between p-5 rounded-xl border-2 bg-gradient-to-r from-card to-accent/5 hover:shadow-xl transition-all duration-300 gap-4"
+                        className="p-4 rounded-xl border-2 bg-gradient-to-r from-card to-accent/5 hover:shadow-xl transition-all duration-300"
                       >
-                        <div className="flex items-center gap-4 flex-1 w-full md:w-auto">
-                          <div className={`h-14 w-14 rounded-full bg-gradient-to-br ${getMealColor(meal.mealType)} flex items-center justify-center shadow-lg flex-shrink-0`}>
-                            <Icon className="h-7 w-7 text-white" />
+                        <div className="flex items-start gap-3 mb-3">
+                          <div className={`h-12 w-12 rounded-full bg-gradient-to-br ${getMealColor(meal.mealType)} flex items-center justify-center shadow-lg flex-shrink-0`}>
+                            <Icon className="h-6 w-6 text-white" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
-                              <p className="font-bold text-lg">{meal.mealType}</p>
+                              <p className="font-bold text-base">{meal.mealType}</p>
                               {!isEditing && (
                                 <Button 
                                   size="icon" 
@@ -652,87 +659,80 @@ export default function MealsPage() {
                                 </Button>
                               )}
                             </div>
-                            <p className="text-sm text-muted-foreground flex items-center gap-1">
+                            <p className="text-xs text-muted-foreground flex items-center gap-1">
                               <Calendar className="h-3 w-3" />
-                              {new Date(meal.date).toLocaleDateString('en-IN', { 
-                                day: 'numeric', 
-                                month: 'long', 
-                                year: 'numeric' 
-                              })}
+                              {new Date(meal.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                             </p>
-                            {isEditing ? (
-                              <div className="mt-2 space-y-2">
-                                <div className="flex items-center gap-2">
-                                  <label className="text-xs font-semibold min-w-[40px]">Count:</label>
-                                  <Input
-                                    type="number"
-                                    min="1"
-                                    max="10"
-                                    className="w-20 h-8 text-center"
-                                    value={editingMeal.count}
-                                    onChange={(e) => setEditingMeal({...editingMeal, count: Number(e.target.value)})}
-                                  />
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <label className="text-xs font-semibold min-w-[40px]">Note:</label>
-                                  <Input
-                                    type="text"
-                                    placeholder="Add note..."
-                                    className="h-8 text-xs flex-1"
-                                    value={editingMeal.note}
-                                    onChange={(e) => setEditingMeal({...editingMeal, note: e.target.value})}
-                                    maxLength={200}
-                                  />
-                                </div>
-                                <div className="flex gap-2">
-                                  <Button size="sm" onClick={() => handleUpdateMeal(meal.id, editingMeal.count, editingMeal.note)} className="h-7">
-                                    <Check className="h-3 w-3 mr-1" /> Save
-                                  </Button>
-                                  <Button size="sm" variant="outline" onClick={() => setEditingMeal(null)} className="h-7">
-                                    <X className="h-3 w-3 mr-1" /> Cancel
-                                  </Button>
-                                </div>
-                              </div>
-                            ) : meal.note ? (
-                              <p className="text-xs text-muted-foreground mt-1 italic" title={meal.note}>
-                                📝 {meal.note}
-                              </p>
-                            ) : (
-                              <p className="text-xs text-muted-foreground mt-1 italic">
-                                No note
-                              </p>
+                            {meal.note && !isEditing && (
+                              <p className="text-xs text-muted-foreground mt-1 italic">📝 {meal.note}</p>
                             )}
                           </div>
                         </div>
-                        <div className="flex items-center gap-6 w-full md:w-auto justify-between md:justify-end">
-                          {!isEditing && (
-                            <div className="text-center px-4 py-2 rounded-lg bg-orange-100 dark:bg-orange-950/30">
-                              <p className="text-xs text-muted-foreground mb-1">Count</p>
-                              <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">{meal.count}</p>
+                        
+                        {isEditing ? (
+                          <div className="space-y-2 mb-3">
+                            <div className="flex items-center gap-2">
+                              <label className="text-xs font-semibold w-12">Count:</label>
+                              <Input
+                                type="number"
+                                min="1"
+                                max="10"
+                                className="w-20 h-8 text-center"
+                                value={editingMeal.count}
+                                onChange={(e) => setEditingMeal({...editingMeal, count: Number(e.target.value)})}
+                              />
                             </div>
-                          )}
-                          <div className="text-center px-4 py-2 rounded-lg bg-blue-100 dark:bg-blue-950/30">
-                            <p className="text-xs text-muted-foreground mb-1">Price</p>
-                            <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">₹{meal.priceAtTime}</p>
+                            <div className="flex items-center gap-2">
+                              <label className="text-xs font-semibold w-12">Note:</label>
+                              <Input
+                                type="text"
+                                placeholder="Add note..."
+                                className="h-8 text-xs flex-1"
+                                value={editingMeal.note}
+                                onChange={(e) => setEditingMeal({...editingMeal, note: e.target.value})}
+                                maxLength={200}
+                              />
+                            </div>
+                            <div className="flex gap-2">
+                              <Button size="sm" onClick={() => handleUpdateMeal(meal.id, editingMeal.count, editingMeal.note)} className="h-7 flex-1">
+                                <Check className="h-3 w-3 mr-1" /> Save
+                              </Button>
+                              <Button size="sm" variant="outline" onClick={() => setEditingMeal(null)} className="h-7 flex-1">
+                                <X className="h-3 w-3 mr-1" /> Cancel
+                              </Button>
+                            </div>
                           </div>
-                          <div className="text-center px-4 py-2 rounded-lg bg-green-100 dark:bg-green-950/30">
-                            <p className="text-xs text-muted-foreground mb-1">Total</p>
-                            <p className="text-2xl font-bold text-green-600 dark:text-green-400">₹{(meal.count * meal.priceAtTime).toFixed(2)}</p>
+                        ) : null}
+                        
+                        <div className="grid grid-cols-3 gap-2 mb-3">
+                          <div className="text-center p-2 rounded-lg bg-orange-100 dark:bg-orange-950/30">
+                            <p className="text-[10px] text-muted-foreground mb-0.5">Count</p>
+                            <p className="text-lg font-bold text-orange-600 dark:text-orange-400">{meal.count}</p>
                           </div>
+                          <div className="text-center p-2 rounded-lg bg-blue-100 dark:bg-blue-950/30">
+                            <p className="text-[10px] text-muted-foreground mb-0.5">Price</p>
+                            <p className="text-lg font-bold text-blue-600 dark:text-blue-400">₹{meal.priceAtTime}</p>
+                          </div>
+                          <div className="text-center p-2 rounded-lg bg-green-100 dark:bg-green-950/30">
+                            <p className="text-[10px] text-muted-foreground mb-0.5">Total</p>
+                            <p className="text-lg font-bold text-green-600 dark:text-green-400">₹{(meal.count * meal.priceAtTime).toFixed(2)}</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
                           <Badge 
                             variant={meal.status === 'ACTIVE' ? 'default' : 'secondary'}
-                            className="px-3 py-1 text-xs font-semibold"
+                            className="px-2 py-1 text-xs"
                           >
                             {meal.status}
                           </Badge>
                           {meal.status === 'ACTIVE' && (
                             <Button
                               variant="destructive"
-                              size="icon"
-                              className="h-10 w-10"
+                              size="sm"
                               onClick={() => setDeleteConfirm({isOpen: true, mealId: meal.id, mealType: meal.mealType})}
                             >
-                              <Trash2 className="h-5 w-5" />
+                              <Trash2 className="h-4 w-4 mr-1" /> Cancel
                             </Button>
                           )}
                         </div>
@@ -743,6 +743,7 @@ export default function MealsPage() {
               </div>
             </CardContent>
           </Card>
+        </div>
           </motion.div>
         </div>
       </main>

@@ -35,15 +35,15 @@ export default function BulkSchedulePage() {
             transition={{ duration: 0.4 }}
             className="space-y-8"
           >
-            <div className="flex items-center gap-4">
-              <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary via-accent to-primary shadow-2xl flex items-center justify-center">
-                <CalendarRange className="h-8 w-8 text-white" />
+            <div className="flex items-center gap-3">
+              <div className="h-12 sm:h-14 w-12 sm:w-14 rounded-2xl bg-gradient-to-br from-primary via-accent to-primary shadow-2xl flex items-center justify-center flex-shrink-0">
+                <CalendarRange className="h-6 sm:h-7 w-6 sm:w-7 text-white" />
               </div>
               <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                   Bulk Scheduling
                 </h1>
-                <p className="text-muted-foreground text-lg mt-1">
+                <p className="text-muted-foreground text-xs sm:text-sm mt-0.5">
                   Schedule meals for multiple days with smart filters
                 </p>
               </div>

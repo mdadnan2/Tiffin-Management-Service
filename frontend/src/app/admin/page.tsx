@@ -226,19 +226,19 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
-      <div className="container mx-auto p-6 max-w-7xl">
+      <div className="container mx-auto p-4 sm:p-6 max-w-7xl">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-          <div className="flex items-center gap-4 mb-8">
-            <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary via-accent to-primary shadow-2xl flex items-center justify-center">
-              <Users className="h-8 w-8 text-white" />
+          <div className="flex items-center gap-3 sm:gap-4 mb-8">
+            <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-gradient-to-br from-primary via-accent to-primary shadow-2xl flex items-center justify-center">
+              <Users className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Admin Dashboard</h1>
-              <p className="text-muted-foreground text-lg">Manage users and view statistics</p>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Admin Dashboard</h1>
+              <p className="text-muted-foreground text-sm sm:text-base">Manage users and view statistics</p>
             </div>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-3 mb-8">
+          <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-3 mb-8">
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }}>
               <Card className="border-2 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -303,37 +303,37 @@ export default function AdminPage() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.4 + index * 0.05 }}
                     whileHover={{ scale: 1.02, x: 8 }}
-                    className="flex items-center justify-between p-5 border-2 rounded-xl hover:shadow-xl cursor-pointer transition-all duration-300 bg-gradient-to-r from-card to-accent/5 hover:border-primary/50"
                     onClick={() => fetchUserSummary(user.id)}
+                    className="flex items-center justify-between p-4 sm:p-5 border-2 rounded-xl hover:shadow-xl cursor-pointer transition-all duration-300 bg-gradient-to-r from-card to-accent/5 hover:border-primary/50 flex-wrap gap-4"
                   >
-                    <div className="flex items-center gap-4 flex-1">
-                      <div className={`h-14 w-14 rounded-full bg-gradient-to-br ${user.role === 'ADMIN' ? 'from-yellow-400 to-orange-500' : 'from-blue-400 to-indigo-500'} flex items-center justify-center shadow-lg`}>
+                    <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                      <div className={`h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-gradient-to-br ${user.role === 'ADMIN' ? 'from-yellow-400 to-orange-500' : 'from-blue-400 to-indigo-500'} flex items-center justify-center shadow-lg flex-shrink-0`}>
                         {user.role === 'ADMIN' ? 
-                          <Crown className="h-7 w-7 text-white" /> : 
-                          <UserCircle className="h-7 w-7 text-white" />
+                          <Crown className="h-6 w-6 sm:h-7 sm:w-7 text-white" /> : 
+                          <UserCircle className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
                         }
                       </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-1">
-                          <p className="font-bold text-lg">{user.name}</p>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 sm:gap-3 mb-1 flex-wrap">
+                          <p className="font-bold text-base sm:text-lg truncate">{user.name}</p>
                           <Badge 
                             variant={user.role === 'ADMIN' ? 'default' : 'secondary'} 
-                            className="text-xs px-3 py-1 font-semibold"
+                            className="text-xs px-2 sm:px-3 py-1 font-semibold"
                           >
                             {user.role === 'ADMIN' ? '👑 ' : ''}{user.role}
                           </Badge>
                         </div>
-                        <p className="text-sm text-muted-foreground">{user.email}</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground truncate">{user.email}</p>
                       </div>
                     </div>
-                    <div className="flex gap-8">
-                      <div className="text-center px-4 py-2 rounded-lg bg-orange-100 dark:bg-orange-950/30">
+                    <div className="flex gap-3 sm:gap-8 w-full sm:w-auto justify-center">
+                      <div className="text-center px-3 sm:px-4 py-2 rounded-lg bg-orange-100 dark:bg-orange-950/30 flex-1 sm:flex-none">
                         <p className="text-xs text-muted-foreground mb-1">Meals</p>
-                        <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">{user.mealCount}</p>
+                        <p className="text-xl sm:text-2xl font-bold text-orange-600 dark:text-orange-400">{user.mealCount}</p>
                       </div>
-                      <div className="text-center px-4 py-2 rounded-lg bg-green-100 dark:bg-green-950/30">
+                      <div className="text-center px-3 sm:px-4 py-2 rounded-lg bg-green-100 dark:bg-green-950/30 flex-1 sm:flex-none">
                         <p className="text-xs text-muted-foreground mb-1">Amount</p>
-                        <p className="text-2xl font-bold text-green-600 dark:text-green-400">₹{user.totalAmount.toFixed(2)}</p>
+                        <p className="text-xl sm:text-2xl font-bold text-green-600 dark:text-green-400">₹{user.totalAmount.toFixed(2)}</p>
                       </div>
                     </div>
                   </motion.div>
