@@ -178,7 +178,7 @@ export default function DashboardPage() {
                 <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-4">
                   {(['BREAKFAST', 'LUNCH', 'DINNER', 'CUSTOM'] as MealType[]).map((type, index) => {
                     const Icon = mealIcons[type];
-                    const count = dashboard?.byType?.[type] || 0;
+                    const count = dashboard?.byType[type] || 0;
                     return (
                       <motion.div
                         key={type}
