@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   title: 'Tiffin Management System',
   description: 'Modern meal management platform',
   viewport: 'width=device-width, initial-scale=1, maximum-scale=5',
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
