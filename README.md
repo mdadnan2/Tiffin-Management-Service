@@ -41,14 +41,14 @@
 
 ## 📸 Screenshots
 
-### Dashboard
-![Dashboard](./screenshots/dashboard_page.png)
-
 ### Login Page
 ![Login](./screenshots/login_page.png)
 
 ### Register Page
 ![Register](./screenshots/register_page.png)
+
+### Dashboard
+![Dashboard](./screenshots/dashboard_page.png)
 
 ---
 
