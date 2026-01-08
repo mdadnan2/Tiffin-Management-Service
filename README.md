@@ -1,4 +1,4 @@
-# Tiffin Management System
+# 🍱 Tiffin Management System
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge&logo=vercel)](https://tiffin-management-service.vercel.app/)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/mdadnan2/tiffin-management-service)
