@@ -16,7 +16,7 @@
 
 ### 🚀 [**Try Live Demo →**](https://tiffin-management-service.vercel.app/)
 
-**API Documentation:** [Swagger UI](https://tiffin-management-system-4uoa.onrender.com/api/docs)
+**API Documentation:** [Swagger UI](https://tiffin-management-system-4uoa.onrender.com/api/docs#/)
 
 **Demo Credentials:**
 ```
@@ -166,7 +166,7 @@ npm run dev
 
 ## 📚 API Documentation
 
-**Live Swagger UI:** [https://tiffin-management-system-4uoa.onrender.com/api/docs](https://tiffin-management-system-4uoa.onrender.com/api/docs)
+**Live Swagger UI:** [https://tiffin-management-system-4uoa.onrender.com/api/docs#/](https://tiffin-management-system-4uoa.onrender.com/api/docs#/)
 
 **Note:** First request may take 50+ seconds due to Render's free tier cold start.
 
