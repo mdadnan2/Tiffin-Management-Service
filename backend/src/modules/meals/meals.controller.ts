@@ -1,6 +1,6 @@
 import { Controller, Post, Get, Patch, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { MealsService } from './meals.service';
 import { CreateMealDto, UpdateMealDto, BulkMealDto, BulkUpdateDto, BulkDeleteDto, CalendarQueryDto, MonthlyDashboardDto, WeeklyDashboardDto } from './dto/meals.dto';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -38,6 +38,10 @@ export class MealsController {
   @Get()
   @ApiBearerAuth()
   @ApiOperation({ summary: 'List meals' })
+  @ApiQuery({ name: 'date', required: false, example: '2024-01-15', description: 'Filter by specific date' })
+  @ApiQuery({ name: 'mealType', required: false, example: 'LUNCH', description: 'Filter by meal type' })
+  @ApiQuery({ name: 'startDate', required: false, example: '2024-01-01', description: 'Filter from start date' })
+  @ApiQuery({ name: 'endDate', required: false, example: '2024-01-31', description: 'Filter to end date' })
   @ApiResponse({ status: 200, description: 'Meals retrieved successfully' })
   @UseGuards(AuthGuard('jwt'))
   listMeals(

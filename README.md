@@ -1,5 +1,6 @@
 # Tiffin Management System
 
+[![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge&logo=vercel)](https://tiffin-management-service.vercel.app/)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/mdadnan2/tiffin-management-service)
 [![NestJS](https://img.shields.io/badge/NestJS-E0234E?logo=nestjs&logoColor=white)](https://nestjs.com/)
 [![Next.js](https://img.shields.io/badge/Next.js-000000?logo=next.js&logoColor=white)](https://nextjs.org/)
@@ -7,597 +8,233 @@
 [![Prisma](https://img.shields.io/badge/Prisma-2D3748?logo=prisma&logoColor=white)](https://www.prisma.io/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 
-A full-stack meal management application built with **NestJS**, **Prisma**, **PostgreSQL**, and **Next.js**. This project demonstrates production-ready backend engineering with clean architecture, authentication, role-based access control, and RESTful API design.
-
-
----
-
-## 🌐 Live Demo
-
-**Frontend**: https://your-app.vercel.app  
-**Backend API**: https://your-backend.railway.app  
-**API Docs**: https://your-backend.railway.app/api/docs
-
-**Demo Credentials**:
-- User: `demo@tiffin.com` / `demo123`
-- Admin: `admin@tiffin.com` / `demo123`
-
-**Note**: First load may take 5-10 seconds due to Railway's free tier cold start.
+> A production-ready full-stack meal management application with enterprise-grade architecture, authentication, and real-time analytics.
 
 ---
 
-## 📖 Overview
+## 🌐 Live Application
 
-The Tiffin Management System allows users to schedule and manage daily meals (breakfast, lunch, dinner) with automatic pricing, bulk scheduling, and analytics dashboards. Admins can monitor user activity and meal statistics.
+### 🚀 [**Try Live Demo →**](https://tiffin-management-service.vercel.app/)
 
-**Key Features:**
-- User authentication with JWT (access + refresh tokens)
+**API Documentation:** [Swagger UI](https://tiffin-management-system-4uoa.onrender.com/api/docs)
+
+**Demo Credentials:**
+```
+👤 User Account
+   Email: demo@tiffin.com
+   Password: demo123
+
+👑 Admin Account
+   Email: admin@tiffin.com
+   Password: demo123
+```
+
+**Features to Explore:**
+- 📊 Real-time dashboard with meal analytics
+- 🍽️ Meal scheduling with bulk operations
+- 📅 Interactive calendar view
+- 💰 Dynamic pricing management
+- 📱 Fully responsive mobile design
+- 👥 Admin panel with user statistics
+
+---
+
+## ✨ Key Features
+
+### 🔐 Authentication & Security
+- JWT-based authentication with access & refresh tokens
+- Bcrypt password hashing (10 rounds)
 - Role-based access control (USER, ADMIN)
-- Meal CRUD operations with bulk scheduling
-- Dynamic pricing per user with price locking
-- Dashboard analytics with totals and breakdowns
-- Clean modular architecture ready for microservices evolution
+- Protected routes with guards
+- Secure session management
+
+### 🍽️ Meal Management
+- Create, update, and cancel meals
+- Bulk scheduling with date range selection
+- Day-specific filtering (skip weekends, select specific days)
+- Meal type categorization (Breakfast, Lunch, Dinner, Custom)
+- Real-time price locking at meal creation
+- Notes and special instructions
+
+### 📊 Analytics & Insights
+- Real-time dashboard with meal statistics
+- Monthly and weekly breakdowns
+- Meal type distribution charts
+- Spending analytics
+- Calendar view with visual indicators
+- Admin panel with user statistics
+
+### 💰 Dynamic Pricing
+- Per-user customizable meal prices
+- Price history tracking
+- Automatic price calculation
+- Total spending summaries
+
+### 📱 Modern UI/UX
+- Fully responsive mobile-first design
+- Smooth animations with Framer Motion
+- Dark mode support
+- Interactive calendar with color-coded indicators
+- Toast notifications for user feedback
+- Loading states and error handling
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Technology Stack
 
-### Backend (Primary Focus)
-- **Framework**: NestJS (TypeScript)
-- **ORM**: Prisma
-- **Database**: PostgreSQL 15
-- **Authentication**: JWT with bcrypt password hashing
-- **Validation**: class-validator, class-transformer
-- **HTTP Client**: Axios
-- **Testing**: Jest
+### Backend
+- **Framework:** NestJS (Node.js)
+- **Language:** TypeScript
+- **ORM:** Prisma
+- **Database:** PostgreSQL 15
+- **Authentication:** JWT + Passport
+- **Validation:** class-validator, class-transformer
+- **API Documentation:** Swagger/OpenAPI
 
 ### Frontend
-- **Framework**: Next.js 14 (React)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
+- **Framework:** Next.js 14 (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **UI Components:** shadcn/ui
+- **Animations:** Framer Motion
+- **State Management:** React Hooks
+- **HTTP Client:** Axios
 
-### Infrastructure
-- **Database**: PostgreSQL (Railway/Render/Supabase)
-- **Backend Hosting**: Railway/Render/AWS Lambda
-- **Frontend Hosting**: Vercel
-- **Database Management**: Prisma Migrate
-
----
-
-## 🏗️ Architecture
-
-### Current Deployment Architecture (Monolithic)
-
-This project uses a **modular monolithic architecture** optimized for deployment on free-tier cloud platforms. All business logic runs in a single NestJS application with clear module boundaries.
-
-```
-┌─────────────────────────────────────────────────────────┐
-│              Client (Next.js on Vercel)                  │
-│                   Port: 3000                             │
-└────────────────────┬────────────────────────────────────┘
-                     │ HTTP/REST
-                     ▼
-┌─────────────────────────────────────────────────────────┐
-│         NestJS API (Railway/Render)                      │
-│                   Port: 3001                             │
-│  ┌──────────────────────────────────────────────────┐   │
-│  │  AuthModule    │  UsersModule  │  MealsModule    │   │
-│  │  AdminModule   │  PrismaModule │  Guards/Pipes   │   │
-│  └──────────────────────────────────────────────────┘   │
-└────────────────────┬────────────────────────────────────┘
-                     │ Prisma ORM
-                     ▼
-┌─────────────────────────────────────────────────────────┐
-│              PostgreSQL Database                         │
-│         (Railway/Render/Supabase)                        │
-└─────────────────────────────────────────────────────────┘
-```
-
-### Request Flow
-
-```
-Client Request
-  → NestJS Controller (validation, auth guards)
-    → Service Layer (business logic)
-      → Prisma Client (ORM)
-        → PostgreSQL Database
-          → Response back through layers
-```
-
-### Module Responsibilities
-
-| Module | Responsibility |
-|--------|----------------|
-| **AuthModule** | Registration, login, JWT token management |
-| **UsersModule** | User profiles, meal price settings |
-| **MealsModule** | Meal CRUD, bulk operations, dashboard analytics |
-| **AdminModule** | Admin monitoring, user statistics |
-| **PrismaModule** | Database access layer (global) |
+### DevOps & Deployment
+- **Frontend Hosting:** Vercel
+- **Backend Hosting:** Render
+- **Database:** Supabase PostgreSQL
+- **Version Control:** Git/GitHub
+- **CI/CD:** Vercel Auto-Deploy
 
 ---
 
-## 📁 Project Structure
-
-```
-backend/
-├── src/
-│   ├── main.ts                    # Application entry point
-│   ├── app.module.ts              # Root module
-│   │
-│   ├── modules/                   # Feature modules
-│   │   ├── auth/                  # Authentication
-│   │   │   ├── dto/
-│   │   │   ├── strategies/        # JWT, Local, Refresh strategies
-│   │   │   ├── auth.controller.ts
-│   │   │   ├── auth.service.ts
-│   │   │   └── auth.module.ts
-│   │   │
-│   │   ├── users/                 # User management
-│   │   │   ├── dto/
-│   │   │   ├── users.controller.ts
-│   │   │   ├── users.service.ts
-│   │   │   └── users.module.ts
-│   │   │
-│   │   ├── meals/                 # Meal management + Dashboard
-│   │   │   ├── dto/
-│   │   │   ├── meals.controller.ts
-│   │   │   ├── meals.service.ts
-│   │   │   └── meals.module.ts
-│   │   │
-│   │   └── admin/                 # Admin operations
-│   │       ├── admin.controller.ts
-│   │       ├── admin.service.ts
-│   │       └── admin.module.ts
-│   │
-│   ├── prisma/                    # Database layer
-│   │   ├── prisma.service.ts
-│   │   └── prisma.module.ts
-│   │
-│   └── common/                    # Shared utilities
-│       ├── decorators/            # @CurrentUser, @Roles
-│       ├── guards/                # RolesGuard
-│       └── filters/               # Exception filters
-│
-├── prisma/
-│   ├── schema.prisma              # Database schema
-│   ├── migrations/                # Migration history
-│   └── seed.ts                    # Seed script
-│
-├── .env                           # Environment variables
-├── package.json
-└── tsconfig.json
-
-frontend/
-├── src/
-│   ├── app/                       # Next.js pages
-│   ├── components/                # React components
-│   ├── lib/
-│   │   └── api.ts                 # API client (single backend URL)
-│   └── types/
-├── .env.local                     # Frontend environment
-└── package.json
-```
-
----
-
-## 🎯 Why This Architecture?
-
-### Current: Modular Monolith
-
-**Chosen for:**
-- ✅ **Free-tier deployment** (Railway/Render free tier)
-- ✅ **Single database connection** (no connection pool exhaustion)
-- ✅ **Zero network latency** (in-process function calls)
-- ✅ **Simplified deployment** (one service to deploy)
-- ✅ **Lower operational cost** ($0/month possible)
-- ✅ **Faster development** (no inter-service communication)
-
-**Trade-offs:**
-- ⚠️ Scales vertically (single instance)
-- ⚠️ All modules share same resources
-- ⚠️ Deployment affects entire application
-
-### Future: Microservices Architecture
-
-**When to evolve:**
-- High traffic requiring horizontal scaling
-- Team size > 5 developers
-- Need for independent deployment cycles
-- Different scaling requirements per module
-- Budget for infrastructure ($100+/month)
-
-**How each module becomes a service:**
-
-```
-Current Module          →  Future Microservice
-─────────────────────────────────────────────────
-AuthModule              →  Auth Service (3001)
-UsersModule             →  User Service (3002)
-MealsModule             →  Meal Service (3003)
-AdminModule             →  Admin Service (3004)
-```
-
-**Additional infrastructure needed:**
-- API Gateway (Kong/NGINX)
-- Service Discovery (Consul/Eureka)
-- Message Queue (RabbitMQ/Kafka)
-- Distributed Tracing (Jaeger)
-- Centralized Logging (ELK Stack)
-- Container Orchestration (Kubernetes)
-
----
-
-## ⚙️ Environment Setup
+## 🚀 Quick Start
 
 ### Prerequisites
+- Node.js 18+ (LTS recommended)
+- PostgreSQL 15+
+- npm or yarn
 
-- **Node.js**: 18+ (LTS recommended)
-- **npm** or **yarn**
-- **PostgreSQL**: 15+ (local or cloud)
+### Local Development Setup
 
-### Environment Variables
-
-**Backend** (`backend/.env`):
-```env
-DATABASE_URL="postgresql://postgres:root@localhost:5432/tiffin_db"
-PORT=3001
-NODE_ENV=development
-
-JWT_SECRET="your-super-secret-jwt-key-change-in-production"
-JWT_EXPIRATION="15m"
-JWT_REFRESH_SECRET="your-super-secret-refresh-key-change-in-production"
-JWT_REFRESH_EXPIRATION="7d"
-```
-
-**Frontend** (`frontend/.env.local`):
-```env
-NEXT_PUBLIC_API_URL=http://localhost:3001
-```
-
-### Install Dependencies
-
+1. **Clone the repository**
 ```bash
-# Backend
+git clone https://github.com/mdadnan2/tiffin-management-service.git
+cd tiffin-management-service
+```
+
+2. **Setup Backend**
+```bash
 cd backend
 npm install
+cp .env.example .env
+# Edit .env with your database credentials
+npm run migrate
+npm run seed
+npm run start:dev
+```
 
-# Frontend
+3. **Setup Frontend**
+```bash
 cd frontend
 npm install
-```
-
----
-
-## 🚀 Running the Project
-
-### Local Development
-
-```bash
-# 1. Start PostgreSQL (Docker or local)
-cd backend
-npm run start:db
-
-# 2. Run migrations and seed data
-npm run setup
-
-# 3. Start backend (in backend/)
-npm run start:dev
-
-# 4. Start frontend (in frontend/)
-cd ../frontend
+cp .env.example .env.local
+# Edit .env.local with backend URL
 npm run dev
 ```
 
-**Access:**
-- Backend API: http://localhost:3001
-- Swagger Docs: http://0.0.0.0:3001/api/docs
+4. **Access the application**
 - Frontend: http://localhost:3000
-
-**Demo Users:**
-- User: `demo@tiffin.com` / `demo123`
-- Admin: `admin@tiffin.com` / `demo123`
+- Backend API: http://localhost:3001
+- Swagger Docs: http://localhost:3001/api/docs
 
 ---
 
-## 🗄️ Database & Prisma
+## 📚 API Documentation
 
-### Schema Overview
+**Live Swagger UI:** [https://tiffin-management-system-4uoa.onrender.com/api/docs](https://tiffin-management-system-4uoa.onrender.com/api/docs)
 
-- **User**: Authentication, roles, profile
-- **PriceSetting**: Per-user meal pricing
-- **MealRecord**: Meal records with date, type, count, price snapshot
+**Note:** First request may take 50+ seconds due to Render's free tier cold start.
 
-### Prisma Commands
+### Key Endpoints
 
-```bash
-# Generate Prisma Client
-npm run prisma:generate
+#### Authentication
+- `POST /auth/register` - Register new user
+- `POST /auth/login` - Login user
+- `POST /auth/refresh` - Refresh access token
+- `GET /auth/me` - Get current user
 
-# Create migration
-npm run migrate
+#### Meals
+- `POST /meals` - Create meal
+- `POST /meals/bulk` - Bulk create meals
+- `GET /meals` - List meals
+- `GET /meals/calendar` - Calendar view
+- `PATCH /meals/:id` - Update meal
+- `DELETE /meals/:id` - Cancel meal
 
-# Apply migrations (production)
-npm run migrate:deploy
+#### Dashboard
+- `GET /dashboard` - User dashboard
+- `GET /dashboard/monthly` - Monthly stats
+- `GET /dashboard/weekly` - Weekly stats
 
-# Seed database
-npm run seed
-
-# Open Prisma Studio
-npm run prisma:studio
-```
-
----
-
-## 🔌 API Documentation
-
-### Authentication
-
-```bash
-POST /auth/register    # Register new user
-POST /auth/login       # Login user
-POST /auth/refresh     # Refresh access token
-GET  /auth/me          # Get current user
-```
-
-### Users
-
-```bash
-GET    /users/profile       # Get own profile
-PATCH  /users/profile       # Update own profile
-GET    /users               # List all users (admin)
-GET    /users/me/price      # Get own meal prices
-PATCH  /users/me/price      # Update own meal prices
-```
-
-### Meals
-
-```bash
-POST   /meals               # Create/update meal
-POST   /meals/bulk          # Create bulk meals
-GET    /meals               # List meals
-GET    /meals/calendar      # Get calendar view
-PATCH  /meals/bulk          # Bulk update meals
-DELETE /meals/bulk          # Bulk cancel meals
-PATCH  /meals/:id           # Update meal
-DELETE /meals/:id           # Cancel meal
-```
-
-### Dashboard
-
-```bash
-GET /dashboard              # Get user dashboard
-GET /dashboard/monthly      # Get monthly dashboard
-GET /dashboard/weekly       # Get weekly dashboard
-```
-
-### Admin
-
-```bash
-GET /admin/users                    # Get all users with stats
-GET /admin/users/:id/summary        # Get user summary
-```
+#### Admin (Admin only)
+- `GET /admin/users` - List all users
+- `GET /admin/users/:id/summary` - User summary
 
 ---
 
-## 🚢 Deployment Guide
+## 🛡️ Security Features
 
-### Backend Deployment Options
-
-#### Option 1: Railway/Render (Recommended)
-
-**Railway:**
-1. Connect GitHub repository
-2. Set environment variables
-3. Railway auto-detects NestJS
-4. Deploy from `backend/` directory
-
-**Render:**
-1. Create new Web Service
-2. Build Command: `cd backend && npm install && npm run build`
-3. Start Command: `cd backend && npm run start:prod`
-4. Add environment variables
-
-**Environment Variables:**
-```
-DATABASE_URL=<your-postgres-url>
-PORT=3001
-NODE_ENV=production
-JWT_SECRET=<strong-secret>
-JWT_EXPIRATION=15m
-JWT_REFRESH_SECRET=<strong-refresh-secret>
-JWT_REFRESH_EXPIRATION=7d
-```
-
-#### Option 2: AWS Lambda (Experimental)
-
-**⚠️ Educational Deployment - See Limitations Below**
-
-For a complete AWS Lambda deployment guide, see [AWS_LAMBDA_DEPLOYMENT.md](./AWS_LAMBDA_DEPLOYMENT.md)
-
-**Quick Overview:**
-```bash
-cd backend
-npm install -g serverless
-serverless deploy --stage prod
-```
-
-**Known Limitations:**
-- ❌ Cold start latency (2-5 seconds first request)
-- ❌ Prisma connection pooling challenges
-- ❌ Higher complexity vs traditional hosting
-- ❌ Debugging more difficult (CloudWatch logs)
-- ⚠️ Not recommended for production with this stack
-
-**When Lambda Makes Sense:**
-- ✅ Sporadic traffic (not constant)
-- ✅ Stateless operations
-- ✅ Cost optimization at scale
-- ✅ Learning serverless architecture
-
-**Why Railway/Render is Better for This Project:**
-- ✅ No cold starts
-- ✅ Persistent connections
-- ✅ Simpler debugging
-- ✅ Better Prisma compatibility
-- ✅ Free tier sufficient for demos
-
-### Frontend Deployment (Vercel)
-
-1. Import GitHub repository
-2. Framework: Next.js
-3. Root Directory: `frontend`
-4. Environment Variable:
-   ```
-   NEXT_PUBLIC_API_URL=https://your-backend-url.railway.app
-   ```
-5. Deploy
-
-### Database (Railway/Supabase)
-
-**Railway PostgreSQL:**
-- Automatic provisioning
-- Copy DATABASE_URL to backend env
-
-**Supabase:**
-- Create project
-- Get connection string
-- Use in DATABASE_URL
+- 🔒 Bcrypt password hashing (10 rounds)
+- 🎫 JWT authentication with refresh tokens
+- 🚪 Role-based access control (RBAC)
+- ✅ Input validation on all endpoints
+- 🛡️ SQL injection prevention via Prisma ORM
+- 🔐 Protected routes with authentication guards
+- ⏱️ Token expiration (15min access, 7 days refresh)
 
 ---
 
-## 📜 NPM Scripts
+## 🎯 Project Highlights
 
-### Backend
+### Architecture
+- ✅ Clean modular architecture
+- ✅ Separation of concerns (Controller → Service → Repository)
+- ✅ Dependency injection pattern
+- ✅ Ready for microservices evolution
 
-```bash
-npm run start:dev         # Start in watch mode
-npm run build             # Build for production
-npm run start:prod        # Start production build
-npm run migrate           # Create and apply migration
-npm run seed              # Seed demo users
-npm run prisma:generate   # Generate Prisma Client
-npm run prisma:studio     # Open Prisma Studio GUI
-```
+### Code Quality
+- ✅ TypeScript for type safety
+- ✅ ESLint + Prettier for code formatting
+- ✅ DTO validation with class-validator
+- ✅ Global exception handling
 
-### Frontend
-
-```bash
-npm run dev               # Start development server
-npm run build             # Build for production
-npm run start             # Start production server
-```
-
----
-
-## 🔒 Security
-
-- Passwords hashed with bcrypt (10 rounds)
-- JWT tokens with short expiration (15 min access, 7 days refresh)
-- Role-based access control enforced at route level
-- Input validation on all endpoints
-- SQL injection prevention via Prisma parameterized queries
-
-**Production Recommendations:**
-- Use environment-specific secrets
-- Enable HTTPS only
-- Implement rate limiting
-- Add CORS whitelist
-- Use RS256 (asymmetric) for JWT
-- Store secrets in secret managers (AWS Secrets Manager, etc.)
-
----
-
-## 🎓 Learning Outcomes
-
-This project demonstrates:
-
-1. **Clean Architecture**: Separation of concerns with modules
-2. **Authentication & Authorization**: JWT + RBAC implementation
-3. **Database Design**: Normalized schema with Prisma
-4. **API Design**: RESTful endpoints with proper HTTP methods
-5. **Validation**: DTO-based request validation
-6. **Error Handling**: Global exception filters
-7. **Deployment**: Cloud-ready configuration
-8. **Scalability**: Module boundaries ready for microservices
-
----
-
-## 🔄 Evolution Path: Monolith → Microservices
-
-### Phase 1: Current (Monolith)
-- Single NestJS application
-- Shared database connection
-- In-process function calls
-- **Cost**: $0-10/month
-
-### Phase 2: Modular Monolith (Current)
-- Clear module boundaries
-- Dependency injection
-- Interface-based contracts
-- **Cost**: $0-10/month
-
-### Phase 3: Microservices (Future)
-- Extract modules to services
-- Add API Gateway
-- Implement service discovery
-- Add message queues
-- **Cost**: $100+/month
-
-### Phase 4: Cloud-Native (Production)
-- Kubernetes orchestration
-- Auto-scaling
-- Distributed tracing
-- Centralized logging
-- **Cost**: $500+/month
-
----
-
-## 🤝 Best Practices Implemented
-
-### Module Boundaries
-- Each module is self-contained
-- Clear interfaces between modules
-- No circular dependencies
-- Ready for extraction to microservices
-
-### Dependency Injection
-- Constructor-based injection
-- Interface-driven design
-- Easy to mock for testing
-
-### Configuration Management
-- Environment-based configuration
-- No hardcoded values
-- Validation at startup
-
-### Error Handling
-- Global exception filter
-- Consistent error responses
-- Proper HTTP status codes
-
----
-
-## 📚 Additional Documentation
-
-- [Prisma Schema](backend/prisma/schema.prisma)
-- [API Documentation](http://0.0.0.0:3001/api/docs) (Swagger)
+### User Experience
+- ✅ Responsive mobile-first design
+- ✅ Smooth animations and transitions
+- ✅ Real-time feedback with toast notifications
+- ✅ Loading states and error handling
+- ✅ Dark mode support
 
 ---
 
 ## 📄 License
 
-This project is licensed under the **MIT License**.
-
-**Disclaimer**: This is a portfolio/demo project created for educational and showcase purposes. It is not intended for production use without proper security hardening, testing, and infrastructure setup.
+MIT License - feel free to use this project for learning and portfolio purposes.
 
 ---
 
-## 📞 Support
+## 🤝 Contributing
 
-For issues and questions, please open an issue on GitHub.
+Contributions, issues, and feature requests are welcome!
 
 ---
 
-**Built with ❤️ using NestJS, TypeScript, Prisma, and PostgreSQL**
+## 📧 Contact
 
-**Architecture Philosophy**: "Start simple, scale smart. Build for today, design for tomorrow."
+For questions or feedback, please open an issue on GitHub.
+
+---
+
+**Built with ❤️ using NestJS, Next.js, TypeScript, Prisma, and PostgreSQL**
