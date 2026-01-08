@@ -42,13 +42,13 @@
 ## 📸 Screenshots
 
 ### Dashboard
-![Dashboard](./screenshots/dashboard.png)
+![Dashboard](./screenshots/dashboard_page.png)
 
 ### Login Page
-![Login](./screenshots/login.png)
+![Login](./screenshots/login_page.png)
 
 ### Register Page
-![Register](./screenshots/register.png)
+![Register](./screenshots/register_page.png)
 
 ---
 
