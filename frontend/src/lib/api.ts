@@ -4,7 +4,10 @@ import { auth } from './auth';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
-const apiClient = axios.create({ baseURL: API_BASE_URL });
+const apiClient = axios.create({ 
+  baseURL: API_BASE_URL,
+  timeout: 60000, // 60s for potential cold starts
+});
 
 let isRefreshing = false;
 let failedQueue: any[] = [];

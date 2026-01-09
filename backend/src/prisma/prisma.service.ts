@@ -18,9 +18,6 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
           url: process.env.DATABASE_URL,
         },
       },
-      // CRITICAL: Limit connection pool for Lambda
-      // Each Lambda instance = 1 connection max
-      // Prevents connection exhaustion
       log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
     });
 

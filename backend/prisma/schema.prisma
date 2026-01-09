@@ -55,6 +55,9 @@ model MealRecord {
   user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, date, mealType])
+  @@index([userId, date])
+  @@index([userId, status])
+  @@index([date])
   @@map("meal_records")
 }
 

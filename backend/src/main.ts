@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters';
 import serverlessExpress from '@vendia/serverless-express';
 import { Handler } from 'aws-lambda';
+import * as compression from 'compression';
 
 let cachedServer: Handler;
 
@@ -46,6 +47,7 @@ async function bootstrapLambda() {
 async function bootstrapLocal() {
   const app = await NestFactory.create(AppModule);
 
+  app.use(compression());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.useGlobalFilters(new AllExceptionsFilter());
   app.enableCors({
