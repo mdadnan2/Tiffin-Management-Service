@@ -1,4 +1,4 @@
-import { Injectable, CacheInterceptor, UseInterceptors } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { MonthlyDashboardDto, WeeklyDashboardDto } from './dto/dashboard.dto';
 import { MealStatus } from '@prisma/client';
