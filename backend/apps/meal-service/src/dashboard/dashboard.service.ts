@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, CacheInterceptor, UseInterceptors } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { MonthlyDashboardDto, WeeklyDashboardDto } from './dto/dashboard.dto';
 import { MealStatus } from '@prisma/client';
@@ -24,38 +24,62 @@ export class DashboardService {
     const today = new Date();
     today.setHours(23, 59, 59, 999);
     
-    const meals = await this.prisma.mealRecord.findMany({
-      where: { 
-        userId, 
-        status: MealStatus.ACTIVE,
-        date: { lte: today }
-      },
-      orderBy: { date: 'asc' },
-    });
+    // Use database aggregation instead of fetching all records
+    const [totalStats, mealsByType] = await Promise.all([
+      // Get total meals and amount
+      this.prisma.mealRecord.aggregate({
+        where: { 
+          userId, 
+          status: MealStatus.ACTIVE,
+          date: { lte: today }
+        },
+        _sum: {
+          count: true,
+        },
+      }),
+      // Get breakdown by type
+      this.prisma.mealRecord.groupBy({
+        by: ['mealType'],
+        where: { 
+          userId, 
+          status: MealStatus.ACTIVE,
+          date: { lte: today }
+        },
+        _sum: {
+          count: true,
+        },
+      }),
+    ]);
 
-    const totalMeals = meals.reduce((sum, meal) => sum + meal.count, 0);
-    const byType = meals.reduce((acc, meal) => {
-      acc[meal.mealType] = (acc[meal.mealType] || 0) + meal.count;
+    // Calculate amounts (need raw query for decimal multiplication)
+    const amountData = await this.prisma.$queryRaw<Array<{ mealType: string; totalAmount: number; count: number }>>`
+      SELECT 
+        "mealType",
+        SUM("count" * "priceAtTime")::numeric as "totalAmount",
+        SUM("count")::integer as count
+      FROM meal_records
+      WHERE "userId" = ${userId}::uuid 
+        AND status = 'ACTIVE'
+        AND date <= ${today}
+      GROUP BY "mealType"
+    `;
+
+    const totalMeals = totalStats._sum.count || 0;
+    const byType = mealsByType.reduce((acc, item) => {
+      acc[item.mealType] = item._sum.count || 0;
       return acc;
-    }, {});
+    }, {} as Record<string, number>);
 
-    const totalAmount = meals.reduce((sum, meal) => {
-      const price = new Decimal(meal.priceAtTime);
-      const count = new Decimal(meal.count);
-      return sum.add(price.mul(count));
-    }, new Decimal(0));
-
-    // Calculate amount by type for pie chart
-    const amountByType = meals.reduce((acc, meal) => {
-      const amount = new Decimal(meal.priceAtTime).mul(meal.count).toNumber();
-      acc[meal.mealType] = (acc[meal.mealType] || 0) + amount;
+    const totalAmount = amountData.reduce((sum, item) => sum + Number(item.totalAmount), 0);
+    const amountByType = amountData.reduce((acc, item) => {
+      acc[item.mealType] = Number(item.totalAmount);
       return acc;
     }, {} as Record<string, number>);
 
     return {
       totalMeals,
       byType,
-      totalAmount: totalAmount.toNumber(),
+      totalAmount,
       amountByType,
     };
   }
@@ -81,51 +105,88 @@ export class DashboardService {
     
     const finalEndDate = endDate > today ? today : endDate;
 
-    const meals = await this.prisma.mealRecord.findMany({
-      where: {
-        userId,
-        status: MealStatus.ACTIVE,
-        date: { gte: startDate, lte: finalEndDate },
-      },
-      orderBy: { date: 'asc' },
-    });
+    // Use database aggregation
+    const [totalStats, mealsByType, amountData, uniqueDaysResult] = await Promise.all([
+      this.prisma.mealRecord.aggregate({
+        where: {
+          userId,
+          status: MealStatus.ACTIVE,
+          date: { gte: startDate, lte: finalEndDate },
+        },
+        _sum: { count: true },
+      }),
+      this.prisma.mealRecord.groupBy({
+        by: ['mealType'],
+        where: {
+          userId,
+          status: MealStatus.ACTIVE,
+          date: { gte: startDate, lte: finalEndDate },
+        },
+        _sum: { count: true },
+      }),
+      this.prisma.$queryRaw<Array<{ mealType: string; totalAmount: number; weekNum: number }>>`
+        SELECT 
+          "mealType",
+          SUM("count" * "priceAtTime")::numeric as "totalAmount",
+          CEIL(EXTRACT(DAY FROM date) / 7.0)::integer as "weekNum"
+        FROM meal_records
+        WHERE "userId" = ${userId}::uuid 
+          AND status = 'ACTIVE'
+          AND date >= ${startDate}
+          AND date <= ${finalEndDate}
+        GROUP BY "mealType", "weekNum"
+      `,
+      this.prisma.$queryRaw<Array<{ count: number }>>`
+        SELECT COUNT(DISTINCT date)::integer as count
+        FROM meal_records
+        WHERE "userId" = ${userId}::uuid 
+          AND status = 'ACTIVE'
+          AND date >= ${startDate}
+          AND date <= ${finalEndDate}
+      `,
+    ]);
 
-    const totalMeals = meals.reduce((sum, meal) => sum + meal.count, 0);
-    const byType = meals.reduce((acc, meal) => {
-      acc[meal.mealType] = (acc[meal.mealType] || 0) + meal.count;
-      return acc;
-    }, {});
-
-    const totalAmount = meals.reduce((sum, meal) => {
-      return sum.add(new Decimal(meal.priceAtTime).mul(meal.count));
-    }, new Decimal(0));
-
-    const amountByType = meals.reduce((acc, meal) => {
-      const amount = new Decimal(meal.priceAtTime).mul(meal.count).toNumber();
-      acc[meal.mealType] = (acc[meal.mealType] || 0) + amount;
+    const totalMeals = totalStats._sum.count || 0;
+    const byType = mealsByType.reduce((acc, item) => {
+      acc[item.mealType] = item._sum.count || 0;
       return acc;
     }, {} as Record<string, number>);
 
-    // Count unique days with meals
-    const uniqueDays = new Set(meals.map(meal => meal.date.toISOString().split('T')[0])).size;
+    const totalAmount = amountData.reduce((sum, item) => sum + Number(item.totalAmount), 0);
+    const amountByType = {} as Record<string, number>;
+    const byWeek = {} as Record<number, { meals: number; amount: number }>;
 
-    // Group by week
-    const byWeek = meals.reduce((acc, meal) => {
-      const date = new Date(meal.date);
-      const weekNum = Math.ceil(date.getDate() / 7);
-      if (!acc[weekNum]) acc[weekNum] = { meals: 0, amount: 0 };
-      acc[weekNum].meals += meal.count;
-      acc[weekNum].amount += new Decimal(meal.priceAtTime).mul(meal.count).toNumber();
-      return acc;
-    }, {} as Record<number, { meals: number; amount: number }>);
+    amountData.forEach(item => {
+      amountByType[item.mealType] = (amountByType[item.mealType] || 0) + Number(item.totalAmount);
+      if (!byWeek[item.weekNum]) byWeek[item.weekNum] = { meals: 0, amount: 0 };
+      byWeek[item.weekNum].amount += Number(item.totalAmount);
+    });
+
+    // Get meal counts per week
+    const weekMeals = await this.prisma.$queryRaw<Array<{ weekNum: number; count: number }>>`
+      SELECT 
+        CEIL(EXTRACT(DAY FROM date) / 7.0)::integer as "weekNum",
+        SUM("count")::integer as count
+      FROM meal_records
+      WHERE "userId" = ${userId}::uuid 
+        AND status = 'ACTIVE'
+        AND date >= ${startDate}
+        AND date <= ${finalEndDate}
+      GROUP BY "weekNum"
+    `;
+
+    weekMeals.forEach(item => {
+      if (!byWeek[item.weekNum]) byWeek[item.weekNum] = { meals: 0, amount: 0 };
+      byWeek[item.weekNum].meals = item.count;
+    });
 
     return {
       month: `${year}-${String(month).padStart(2, '0')}`,
       totalMeals,
       byType,
-      totalAmount: totalAmount.toNumber(),
+      totalAmount,
       amountByType,
-      daysWithMeals: uniqueDays,
+      daysWithMeals: uniqueDaysResult[0]?.count || 0,
       byWeek,
     };
   }
@@ -155,31 +216,50 @@ export class DashboardService {
     
     const finalEndDate = endDate > today ? today : endDate;
 
-    const meals = await this.prisma.mealRecord.findMany({
-      where: {
-        userId,
-        status: MealStatus.ACTIVE,
-        date: { gte: startDate, lte: finalEndDate },
-      },
-      orderBy: { date: 'asc' },
-    });
+    // Use database aggregation
+    const [totalStats, mealsByType, dailyData] = await Promise.all([
+      this.prisma.mealRecord.aggregate({
+        where: {
+          userId,
+          status: MealStatus.ACTIVE,
+          date: { gte: startDate, lte: finalEndDate },
+        },
+        _sum: { count: true },
+      }),
+      this.prisma.mealRecord.groupBy({
+        by: ['mealType'],
+        where: {
+          userId,
+          status: MealStatus.ACTIVE,
+          date: { gte: startDate, lte: finalEndDate },
+        },
+        _sum: { count: true },
+      }),
+      this.prisma.$queryRaw<Array<{ date: Date; totalAmount: number; count: number }>>`
+        SELECT 
+          date,
+          SUM("count" * "priceAtTime")::numeric as "totalAmount",
+          SUM("count")::integer as count
+        FROM meal_records
+        WHERE "userId" = ${userId}::uuid 
+          AND status = 'ACTIVE'
+          AND date >= ${startDate}
+          AND date <= ${finalEndDate}
+        GROUP BY date
+        ORDER BY date
+      `,
+    ]);
 
-    const totalMeals = meals.reduce((sum, meal) => sum + meal.count, 0);
-    const byType = meals.reduce((acc, meal) => {
-      acc[meal.mealType] = (acc[meal.mealType] || 0) + meal.count;
+    const totalMeals = totalStats._sum.count || 0;
+    const byType = mealsByType.reduce((acc, item) => {
+      acc[item.mealType] = item._sum.count || 0;
       return acc;
-    }, {});
+    }, {} as Record<string, number>);
 
-    const totalAmount = meals.reduce((sum, meal) => {
-      return sum.add(new Decimal(meal.priceAtTime).mul(meal.count));
-    }, new Decimal(0));
-
-    // Group by day
-    const byDay = meals.reduce((acc, meal) => {
-      const dateKey = meal.date.toISOString().split('T')[0];
-      if (!acc[dateKey]) acc[dateKey] = { meals: 0, amount: 0 };
-      acc[dateKey].meals += meal.count;
-      acc[dateKey].amount += new Decimal(meal.priceAtTime).mul(meal.count).toNumber();
+    const totalAmount = dailyData.reduce((sum, item) => sum + Number(item.totalAmount), 0);
+    const byDay = dailyData.reduce((acc, item) => {
+      const dateKey = new Date(item.date).toISOString().split('T')[0];
+      acc[dateKey] = { meals: item.count, amount: Number(item.totalAmount) };
       return acc;
     }, {} as Record<string, { meals: number; amount: number }>);
 
@@ -187,7 +267,7 @@ export class DashboardService {
       week: `${year}-W${String(week).padStart(2, '0')}`,
       totalMeals,
       byType,
-      totalAmount: totalAmount.toNumber(),
+      totalAmount,
       byDay,
     };
   }

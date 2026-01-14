@@ -57,6 +57,7 @@ model MealRecord {
   @@unique([userId, date, mealType])
   @@index([userId, date])
   @@index([userId, status])
+  @@index([userId, status, date])
   @@index([date])
   @@map("meal_records")
 }
