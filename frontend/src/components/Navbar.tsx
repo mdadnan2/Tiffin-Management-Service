@@ -4,10 +4,21 @@ import { auth } from '@/lib/auth';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { LogOut, LayoutDashboard, UtensilsCrossed, User, Shield, Calendar, CalendarRange, Settings, BarChart3, Menu, X } from 'lucide-react';
+import { LogOut, LayoutDashboard, UtensilsCrossed, User, Shield, Calendar, CalendarRange, Settings, BarChart3, Menu, X, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import type { User as UserType } from '@/types';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 export default function Navbar() {
   const router = useRouter();
@@ -38,10 +49,8 @@ export default function Navbar() {
   }
 
   const handleLogout = () => {
-    if (confirm('Are you sure you want to logout?')) {
-      auth.clearAuth();
-      router.push('/login');
-    }
+    auth.clearAuth();
+    router.push('/login');
   };
 
   return (
@@ -111,10 +120,33 @@ export default function Navbar() {
             <div className="h-8 w-px bg-border mx-2" />
             <span className="text-sm text-muted-foreground whitespace-nowrap">{user?.name}</span>
             <ThemeToggle />
-            <Button variant="destructive" size="sm" onClick={handleLogout} className="gap-2">
-              <LogOut className="h-4 w-4" />
-              Logout
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm" className="gap-2">
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent className="w-[calc(100vw-2rem)] max-w-md p-8">
+                <AlertDialogHeader className="space-y-4">
+                  <div className="flex flex-col items-center text-center gap-4">
+                    <div className="h-16 w-16 rounded-full bg-destructive/10 flex items-center justify-center animate-pulse">
+                      <AlertTriangle className="h-8 w-8 text-destructive" />
+                    </div>
+                    <AlertDialogTitle className="text-2xl font-bold">Logout Confirmation</AlertDialogTitle>
+                  </div>
+                  <AlertDialogDescription className="text-center text-base pt-2">
+                    <p className="text-foreground font-semibold text-lg">Are you sure you want to logout?</p>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter className="flex-col sm:flex-row gap-3 mt-6">
+                  <AlertDialogCancel className="w-full sm:w-auto m-0 h-11">Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleLogout} className="w-full sm:w-auto m-0 h-11 bg-destructive hover:bg-destructive/90 font-semibold">
+                    Yes, Logout
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
 
           {/* Mobile Menu Button */}
@@ -188,18 +220,43 @@ export default function Navbar() {
               )}
               <div className="pt-2 border-t">
                 <div className="text-sm text-muted-foreground mb-2 px-2">{user?.name}</div>
-                <Button 
-                  variant="destructive" 
-                  size="sm" 
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    handleLogout();
-                  }} 
-                  className="w-full justify-start gap-2"
-                >
-                  <LogOut className="h-4 w-4" />
-                  Logout
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button 
+                      variant="destructive" 
+                      size="sm" 
+                      className="w-full justify-start gap-2"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Logout
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="w-[calc(100vw-2rem)] max-w-md p-8">
+                    <AlertDialogHeader className="space-y-4">
+                      <div className="flex flex-col items-center text-center gap-4">
+                        <div className="h-16 w-16 rounded-full bg-destructive/10 flex items-center justify-center animate-pulse">
+                          <AlertTriangle className="h-8 w-8 text-destructive" />
+                        </div>
+                        <AlertDialogTitle className="text-2xl font-bold">Logout Confirmation</AlertDialogTitle>
+                      </div>
+                      <AlertDialogDescription className="text-center text-base pt-2">
+                        <p className="text-foreground font-semibold text-lg">Are you sure you want to logout?</p>
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className="flex-col sm:flex-row gap-3 mt-6">
+                      <AlertDialogCancel onClick={() => setMobileMenuOpen(false)} className="w-full sm:w-auto m-0 h-11">Cancel</AlertDialogCancel>
+                      <AlertDialogAction 
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          handleLogout();
+                        }} 
+                        className="w-full sm:w-auto m-0 h-11 bg-destructive hover:bg-destructive/90 font-semibold"
+                      >
+                        Yes, Logout
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
           </motion.div>

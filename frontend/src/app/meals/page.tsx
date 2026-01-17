@@ -33,6 +33,7 @@ export default function MealsPage() {
   const [pageLoading, setPageLoading] = useState(true);
   const [editingMeal, setEditingMeal] = useState<{id: string, count: number, note: string} | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{isOpen: boolean, mealId: string, mealType: string} | null>(null);
+  const [bulkDeleteConfirm, setBulkDeleteConfirm] = useState<{isOpen: boolean, meals: Meal[], mealType: string} | null>(null);
   const [filterStartDate, setFilterStartDate] = useState('');
   const [filterEndDate, setFilterEndDate] = useState('');
   const [filterType, setFilterType] = useState<MealType | 'ALL'>('ALL');
@@ -342,18 +343,7 @@ export default function MealsPage() {
                                       variant="destructive"
                                       size="sm"
                                       className="h-8"
-                                      onClick={async () => {
-                                        const confirmed = confirm(`Delete all upcoming ${mealType} meals (${upcomingMeals.length} days)?`);
-                                        if (!confirmed) return;
-                                        try {
-                                          await Promise.all(upcomingMeals.map(m => api.meals.delete(m.id)));
-                                          toast.success(`${upcomingMeals.length} upcoming meals deleted`);
-                                          await loadMeals();
-                                          await loadScheduledMeals();
-                                        } catch (err: any) {
-                                          toast.error('Failed to delete meals');
-                                        }
-                                      }}
+                                      onClick={() => setBulkDeleteConfirm({isOpen: true, meals: upcomingMeals, mealType})}
                                     >
                                       <Trash2 className="h-3 w-3 mr-1" /> Delete
                                     </Button>
@@ -747,6 +737,29 @@ export default function MealsPage() {
           </motion.div>
         </div>
       </main>
+      
+      {bulkDeleteConfirm && (
+        <ConfirmDialog
+          isOpen={bulkDeleteConfirm.isOpen}
+          onClose={() => setBulkDeleteConfirm(null)}
+          onConfirm={async () => {
+            try {
+              await Promise.all(bulkDeleteConfirm.meals.map(m => api.meals.delete(m.id)));
+              toast.success(`${bulkDeleteConfirm.meals.length} upcoming meals deleted`);
+              await loadMeals();
+              await loadScheduledMeals();
+              setBulkDeleteConfirm(null);
+            } catch (err: any) {
+              toast.error('Failed to delete meals');
+            }
+          }}
+          title="Delete All Upcoming Meals?"
+          description={`Are you sure you want to delete all ${bulkDeleteConfirm.meals.length} upcoming ${bulkDeleteConfirm.mealType} meals? This action cannot be undone.`}
+          confirmText="Yes, Delete All"
+          cancelText="Cancel"
+          variant="danger"
+        />
+      )}
       
       {deleteConfirm && (
         <ConfirmDialog
