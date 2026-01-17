@@ -14,7 +14,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       process.env.FRONTEND_URL,
-      'https://tiffin-management-service.vercel.app',
+      'https://tiffin360.vercel.app',
       'http://localhost:3000'
     ].filter(Boolean),
     credentials: true,
