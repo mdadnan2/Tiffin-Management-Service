@@ -1,6 +1,6 @@
 # 🍱 Tiffin Management System
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge&logo=vercel)](https://tiffin-management-service.vercel.app/)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge&logo=vercel)](https://tiffin360.vercel.app/)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/mdadnan2/tiffin-management-service)
 [![NestJS](https://img.shields.io/badge/NestJS-E0234E?logo=nestjs&logoColor=white)](https://nestjs.com/)
 [![Next.js](https://img.shields.io/badge/Next.js-000000?logo=next.js&logoColor=white)](https://nextjs.org/)
@@ -14,7 +14,7 @@
 
 ## 🌐 Live Application
 
-### 🚀 [**Try Live Demo →**](https://tiffin-management-service.vercel.app/)
+### 🚀 [**Try Live Demo →**](https://tiffin360.vercel.app/)
 
 **API Documentation:** [Swagger UI](https://tiffin-management-system-4uoa.onrender.com/api/docs#/)
 
@@ -116,7 +116,7 @@
 ### DevOps & Deployment
 - **Frontend Hosting:** Vercel
 - **Backend Hosting:** Render
-- **Database:** Supabase PostgreSQL
+- **Database:** Neon PostgreSQL
 - **Version Control:** Git/GitHub
 - **CI/CD:** Vercel Auto-Deploy
 
@@ -234,26 +234,24 @@ npm run dev
 
 ## 📄 License
 
-MIT License - feel free to use this project for learning and portfolio purposes.
+This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome!
-
----
-
-## 📧 Contact
-
-For questions or feedback, please open an issue on GitHub.
-
----
-
-## 👨‍💻 Creator
+## 📞 Contact
 
 **Mohammad Adnan**
 
+- 📧 Email: [adnanmd2410@gmail.com](mailto:adnanmd2410@gmail.com)
+- 💼 LinkedIn: [mohammadadnan01](https://linkedin.com/in/mohammadadnan01)
+- 👨‍💻 GitHub: [mdadnan2](https://github.com/mdadnan2)
+- 📱 Phone: +91 9356576610
+- 📍 Location: Pune, Maharashtra, India
+
 ---
 
-**Built with ❤️ using NestJS, Next.js, TypeScript, Prisma, and PostgreSQL**
+⭐ **If you found this project inspiring, please give it a star!**
+
+---
+
+**Made with ❤️ by Mohammad Adnan**
