@@ -190,31 +190,34 @@ export default function AdminPage() {
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4 md:grid-cols-2">
-                  {Object.entries(selectedUser.byType).map(([type, count], index) => (
-                    <motion.div 
-                      key={type}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.4 + index * 0.1 }}
-                      className="flex items-center justify-between p-4 rounded-lg border-2 hover:shadow-lg transition-all duration-300 hover:scale-105 bg-gradient-to-r from-card to-accent/5"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={`h-12 w-12 rounded-full bg-gradient-to-br ${getMealColor(type)} flex items-center justify-center shadow-md`}>
-                          {getMealIcon(type)}
+                  {['BREAKFAST', 'LUNCH', 'DINNER', 'CUSTOM'].map((type, index) => {
+                    const count = selectedUser.byType[type] || 0;
+                    return (
+                      <motion.div 
+                        key={type}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.4 + index * 0.1 }}
+                        className="flex items-center justify-between p-4 rounded-lg border-2 hover:shadow-lg transition-all duration-300 hover:scale-105 bg-gradient-to-r from-card to-accent/5"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`h-12 w-12 rounded-full bg-gradient-to-br ${getMealColor(type)} flex items-center justify-center shadow-md`}>
+                            {getMealIcon(type)}
+                          </div>
+                          <div>
+                            <p className="font-bold text-lg">{type}</p>
+                            <p className="text-xs text-muted-foreground">meal type</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-bold text-lg">{type}</p>
-                          <p className="text-xs text-muted-foreground">meal type</p>
+                        <div className="text-right">
+                          <div className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                            {count}
+                          </div>
+                          <p className="text-xs text-muted-foreground">meals</p>
                         </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                          {count}
-                        </div>
-                        <p className="text-xs text-muted-foreground">meals</p>
-                      </div>
-                    </motion.div>
-                  ))}
+                      </motion.div>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
