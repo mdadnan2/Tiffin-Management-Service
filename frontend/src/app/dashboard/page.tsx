@@ -39,6 +39,7 @@ export default function DashboardPage() {
       const { data } = await api.dashboard.get();
       setDashboard(data);
     } catch (err: any) {
+      if (err.response?.status === 401) return; // interceptor will redirect
       toast.error(err.response?.data?.message || 'Failed to load dashboard');
     } finally {
       setLoading(false);
